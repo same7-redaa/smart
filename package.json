@@ -10,7 +10,7 @@
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist"
   },
-  "homepage": "https://same7-redaa.github.io/smart-media",
+  "homepage": "https://same7-redaa.github.io/smart",
   "dependencies": {
     "firebase": "^12.6.0",
     "react": "^19.2.0",
