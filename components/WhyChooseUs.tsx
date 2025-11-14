@@ -1,10 +1,10 @@
-
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { TargetIcon, PaletteIcon, FilmIcon, CheckCircleIcon } from './Icons';
+import { SiteSettings, getSettings } from '../services/settingsService';
 
 const BenefitCard: React.FC<{ icon: React.ReactNode; title: string; description: string; }> = ({ icon, title, description }) => (
     <div className="flex items-start space-x-4 space-x-reverse">
-        <div className="flex-shrink-0 bg-[#3B82F6]/10 text-[#3B82F6] rounded-full p-3">
+        <div className="flex-shrink-0 bg-[#F59E0B] text-white rounded-full p-3 shadow-lg">
             {icon}
         </div>
         <div>
@@ -15,6 +15,16 @@ const BenefitCard: React.FC<{ icon: React.ReactNode; title: string; description:
 );
 
 const WhyChooseUs: React.FC = () => {
+  const [settings, setSettings] = useState<SiteSettings>({});
+
+  useEffect(() => {
+    const loadSettings = async () => {
+      const data = await getSettings();
+      setSettings(data);
+    };
+    loadSettings();
+  }, []);
+
   return (
     <section className="py-20 bg-[#F9FAFB]">
       <div className="container mx-auto px-6">
@@ -46,7 +56,7 @@ const WhyChooseUs: React.FC = () => {
             <div className="relative w-[350px] h-[450px] md:w-[450px] md:h-[550px]">
                 <div className="absolute inset-0 bg-[#F59E0B]/20 rounded-3xl transform rotate-6"></div>
                 <img 
-                    src="https://picsum.photos/seed/strategy-meeting/600/800"
+                    src={settings.partnerImageUrl || "https://picsum.photos/seed/strategy-meeting/600/800"}
                     alt="فريق يناقش استراتيجيات التسويق"
                     className="relative w-full h-full object-cover rounded-3xl shadow-2xl"
                 />

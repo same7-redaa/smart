@@ -10,7 +10,7 @@ interface ServiceCardProps {
 
 const ServiceCard: React.FC<ServiceCardProps> = ({ icon, title, description, onNavigate }) => (
   <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 h-full flex flex-col">
-    <div className="mx-auto inline-block bg-[#3B82F6] text-white p-4 rounded-full mb-6">
+    <div className="mx-auto inline-block bg-[#F59E0B] text-white p-4 rounded-full mb-6 shadow-lg">
       {icon}
     </div>
     <h3 className="text-2xl font-bold mb-4 text-[#0A1F44] text-center">{title}</h3>

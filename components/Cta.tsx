@@ -1,10 +1,9 @@
-
 import React from 'react';
 
 const Cta: React.FC = () => {
   return (
-    <section className="bg-[#3B82F6] text-white relative">
-      <div className="absolute inset-0 bg-black/10"></div>
+    <section className="bg-[#3B82F6] text-white relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-r from-[#3B82F6]/90 to-[#0A1F44]/80"></div>
        <div className="container mx-auto px-6 py-20 text-center relative z-10">
         <h2 className="text-4xl font-bold mb-4">كن على اتصال دائم!</h2>
         <p className="text-xl mb-8 max-w-2xl mx-auto">

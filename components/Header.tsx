@@ -11,7 +11,7 @@ const Header: React.FC<HeaderProps> = ({ onNavigateHome }) => {
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
+      setIsScrolled(window.scrollY > 100);
     };
 
     window.addEventListener('scroll', handleScroll);
@@ -22,16 +22,20 @@ const Header: React.FC<HeaderProps> = ({ onNavigateHome }) => {
   }, []);
 
   return (
-    <header className={`bg-white sticky top-0 z-50 transition-shadow duration-300 ${isScrolled ? 'shadow-lg' : 'shadow-md'}`}>
-      <div className={`container mx-auto px-6 transition-all duration-300 ${isScrolled ? 'py-1' : 'py-2'}`}>
+    <header className="sticky top-0 z-50 transition-all duration-300 shadow-md rounded-b-3xl border-b border-blue-300 overflow-hidden relative" style={{
+      background: 'linear-gradient(135deg, #0A1F44 0%, #1e3a6f 100%)'
+    }}>
+      <div className="container mx-auto px-6 py-2 relative z-10">
         <div className="flex items-center justify-between">
           <div>
-            <button onClick={onNavigateHome} aria-label="Go to homepage">
-              <img 
-                src="https://i.postimg.cc/mrHLSfx7/final-01.png" 
-                alt="Smart Media Logo" 
-                className={`transition-all duration-300 ${isScrolled ? 'h-14' : 'h-16'}`}
-              />
+            <button onClick={onNavigateHome} aria-label="Go to homepage" className="transition-all duration-300 hover:opacity-90">
+              <div className="bg-white rounded-xl p-2 shadow-lg">
+                <img 
+                  src="./logo.png" 
+                  alt="Smart Media Logo" 
+                  className="h-8"
+                />
+              </div>
             </button>
           </div>
           <nav className="hidden md:flex items-center space-x-8 space-x-reverse">
@@ -44,41 +48,43 @@ const Header: React.FC<HeaderProps> = ({ onNavigateHome }) => {
                   if (link === "الرئيسية") onNavigateHome();
                   // In a full app, other links would scroll or navigate.
                 }}
-                className="text-[#0A1F44] font-semibold hover:text-[#3B82F6] transition-colors duration-300"
+                className="text-white font-semibold hover:text-[#F59E0B] transition-colors duration-300"
               >
                 {link}
               </a>
             ))}
           </nav>
           <div className="md:hidden">
-            <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-[#0A1F44] focus:outline-none" aria-expanded={isMenuOpen} aria-controls="mobile-menu">
+            <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-white focus:outline-none" aria-expanded={isMenuOpen} aria-controls="mobile-menu">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={isMenuOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16m-7 6h7"}></path>
               </svg>
             </button>
           </div>
         </div>
-        {isMenuOpen && (
-          <div id="mobile-menu" className="md:hidden pt-4 pb-2 mt-2 border-t border-gray-200">
-            <nav className="flex flex-col space-y-2">
-              {navLinks.map((link) => (
-                <a 
-                  key={link} 
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setIsMenuOpen(false);
-                    if (link === "الرئيسية") onNavigateHome();
-                  }}
-                  className="text-[#0A1F44] font-medium hover:bg-[#3B82F6] hover:text-white transition-colors duration-300 py-2 px-4 text-center rounded-md"
-                >
-                  {link}
-                </a>
-              ))}
-            </nav>
-          </div>
-        )}
       </div>
+      {isMenuOpen && (
+        <div id="mobile-menu" className="md:hidden bg-[#0A1F44] shadow-lg">
+          <nav className="flex flex-col">
+            {navLinks.map((link, index) => (
+              <a 
+                key={link} 
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setIsMenuOpen(false);
+                  if (link === "الرئيسية") onNavigateHome();
+                }}
+                className={`text-white font-semibold hover:bg-white/10 transition-colors duration-200 py-4 px-6 text-right ${
+                  index !== navLinks.length - 1 ? 'border-b border-white/10' : ''
+                }`}
+              >
+                {link}
+              </a>
+            ))}
+          </nav>
+        </div>
+      )}
     </header>
   );
 };
