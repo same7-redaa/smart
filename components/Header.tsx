@@ -31,7 +31,7 @@ const Header: React.FC<HeaderProps> = ({ onNavigateHome }) => {
             <button onClick={onNavigateHome} aria-label="Go to homepage" className="transition-all duration-300 hover:opacity-90">
               <div className="bg-white rounded-xl p-2 shadow-lg">
                 <img 
-                  src="./logo.png" 
+                  src="/logo.png" 
                   alt="Smart Media Logo" 
                   className="h-8"
                 />
