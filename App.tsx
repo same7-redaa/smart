@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, useNavigate, useParams, useLocation, Navigate } from 'react-router-dom';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import WhyChooseUs from './components/WhyChooseUs';
@@ -10,93 +11,107 @@ import Footer from './components/Footer';
 import ServicePortfolioPage from './components/ServicePortfolioPage';
 import ProtectedAdminPanel from './components/ProtectedAdminPanel';
 
-const App: React.FC = () => {
-  const [activeView, setActiveView] = useState<{ page: 'home' | 'portfolio' | 'admin'; serviceTitle: string | null }>({
-    page: 'home',
-    serviceTitle: null,
-  });
+// دالة تحويل عناوين الخدمات من slugs إنجليزية إلى النصوص العربية المقابلة في قاعدة البيانات
+export const getServiceTitleFromSlug = (slug: string): string | null => {
+  switch (slug) {
+    case 'digital-marketing':
+      return 'التسويق الإلكتروني';
+    case 'social-media':
+      return 'تصميمات سوشيال ميديا';
+    case 'video-production':
+      return 'تصوير ومونتاج';
+    case 'voice-over':
+      return 'تعليق صوتي';
+    default:
+      return null;
+  }
+};
 
-  // التحقق من hash في URL عند التحميل الأولي
-  useEffect(() => {
-    const hash = window.location.hash;
-    if (hash === '#admin') {
-      setActiveView({ page: 'admin', serviceTitle: null });
-    } else if (hash.startsWith('#portfolio/')) {
-      const serviceTitle = decodeURIComponent(hash.replace('#portfolio/', ''));
-      setActiveView({ page: 'portfolio', serviceTitle });
-    }
-  }, []);
+// دالة تحويل أسماء الخدمات العربية إلى slugs إنجليزية احترافية للروابط
+export const getSlugFromServiceTitle = (title: string): string => {
+  switch (title) {
+    case 'التسويق الإلكتروني':
+      return 'digital-marketing';
+    case 'تصميمات سوشيال ميديا':
+      return 'social-media';
+    case 'تصوير ومونتاج':
+      return 'video-production';
+    case 'تعليق صوتي':
+      return 'voice-over';
+    default:
+      return '';
+  }
+};
 
-  useEffect(() => {
-    const handlePopState = (event: PopStateEvent) => {
-      if (event.state) {
-        setActiveView(event.state);
-      } else {
-        const hash = window.location.hash;
-        if (hash === '#admin') {
-          setActiveView({ page: 'admin', serviceTitle: null });
-        } else if (hash.startsWith('#portfolio/')) {
-          const serviceTitle = decodeURIComponent(hash.replace('#portfolio/', ''));
-          setActiveView({ page: 'portfolio', serviceTitle });
-        } else {
-          setActiveView({ page: 'home', serviceTitle: null });
-        }
-      }
-    };
+// مكون الصفحة الرئيسية
+const Home: React.FC = () => {
+  const navigate = useNavigate();
+  return (
+    <>
+      <Hero />
+      <WhyChooseUs />
+      <Services onNavigate={(title) => navigate(`/portfolio/${getSlugFromServiceTitle(title)}`)} />
+      <Cta />
+      <Process />
+      <Contact />
+    </>
+  );
+};
 
-    window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
-  }, []);
+// مكون وسيط لمعرض الأعمال يقوم بقراءة الـ slug وتحميل الصفحة المناسبة
+const PortfolioWrapper: React.FC = () => {
+  const { serviceSlug } = useParams<{ serviceSlug: string }>();
+  const navigate = useNavigate();
+  const serviceTitle = getServiceTitleFromSlug(serviceSlug || '');
 
-  const navigateToServicePortfolio = (serviceTitle: string) => {
-    const newState = { page: 'portfolio' as const, serviceTitle };
-    setActiveView(newState);
-    window.history.pushState(newState, '', `#portfolio/${encodeURIComponent(serviceTitle)}`);
-    window.scrollTo(0, 0);
-  };
-
-  const navigateHome = () => {
-    const newState = { page: 'home' as const, serviceTitle: null };
-    setActiveView(newState);
-    window.history.pushState(newState, '', '#');
-  };
-
-  const navigateToAdmin = () => {
-    const newState = { page: 'admin' as const, serviceTitle: null };
-    setActiveView(newState);
-    window.history.pushState(newState, '', '#admin');
-    window.scrollTo(0, 0);
-  };
-
-  // للوصول للوحة التحكم: اكتب في الـ console: window.openAdmin()
-  useEffect(() => {
-    (window as any).openAdmin = navigateToAdmin;
-  }, []);
+  if (!serviceTitle) {
+    return <Navigate to="/" replace />;
+  }
 
   return (
-    <div className="text-[#0A1F44]" style={activeView.page === 'home' ? { background: 'linear-gradient(135deg, #0A1F44 0%, #1e3a6f 50%, #2d4a7c 100%)' } : { background: '#f9fafb' }}>
-      {activeView.page !== 'admin' && <Header onNavigateHome={navigateHome} />}
+    <ServicePortfolioPage 
+      serviceTitle={serviceTitle} 
+      onBack={() => navigate('/')} 
+    />
+  );
+};
+
+// مكون التحكم في الهيكل العام والتصميم
+const AppContent: React.FC = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  
+  const isAdmin = location.pathname === '/admin';
+  const isHome = location.pathname === '/';
+
+  return (
+    <div 
+      className="text-[#0A1F44]" 
+      style={isHome ? { background: 'linear-gradient(135deg, #0A1F44 0%, #1e3a6f 50%, #2d4a7c 100%)' } : { background: '#f9fafb' }}
+    >
+      {!isAdmin && <Header onNavigateHome={() => navigate('/')} />}
       <main>
-        {activeView.page === 'home' ? (
-          <>
-            <Hero />
-            <WhyChooseUs />
-            <Services onNavigate={navigateToServicePortfolio} />
-            <Cta />
-            <Process />
-            <Contact />
-          </>
-        ) : activeView.page === 'admin' ? (
-          <ProtectedAdminPanel onBack={navigateHome} />
-        ) : (
-          <ServicePortfolioPage 
-            serviceTitle={activeView.serviceTitle!} 
-            onBack={navigateHome} 
-          />
-        )}
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/admin" element={<ProtectedAdminPanel onBack={() => navigate('/')} />} />
+          <Route path="/portfolio/:serviceSlug" element={<PortfolioWrapper />} />
+          {/* تحويل أي رابط خاطئ إلى الصفحة الرئيسية */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
       </main>
-      {activeView.page !== 'admin' && <Footer />}
+      {!isAdmin && <Footer />}
     </div>
+  );
+};
+
+const App: React.FC = () => {
+  // الاعتماد على basename ديناميكي مستند إلى مسار بناء Vite
+  const basename = import.meta.env.BASE_URL;
+
+  return (
+    <Router basename={basename}>
+      <AppContent />
+    </Router>
   );
 };
 
